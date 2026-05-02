@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,22 +16,30 @@ public class GameManager : MonoBehaviour
     public TMP_Text swordname;
     public int swordPlusmoney;
     public int swordmoney;
+    public int swordbangji;
+    public GameObject button;
 
     public TMP_Text sucsessT;
     public TMP_Text moneyT;
     public TMP_Text swordMT;
     public TMP_Text swordPMT;
+    public TMP_Text bangjiT;
+    public TMP_Text plusT;
+    public TMP_Text noticeT;
 
     public int plus = 0;
     public int sucsess;
     public int money;
     public int bangji;
+    public int warp;
 
     // Start is called before the first frame update
     void Start()
     {
         SetSword();
         money = 10000;
+
+        bangji = 100;
     }
 
     // Update is called once per frame
@@ -42,6 +51,7 @@ public class GameManager : MonoBehaviour
         swordPMT.text = $"강화비용: {swordPlusmoney.ToString()}원";
         sucsessT.text = $"성공확률: {sucsess.ToString()}%";
         moneyT.text = "돈: " + money + "원";
+        bangjiT.text = "방지권: " + bangji + "개";
     }
 
     public void GetMouseBD()
@@ -49,7 +59,7 @@ public class GameManager : MonoBehaviour
         int a = 0;
         if (plus > 0)
         {
-            a = Random.Range(0, 101);
+            a = Random.Range(1, 101);
         }
         else
         {
@@ -58,16 +68,9 @@ public class GameManager : MonoBehaviour
         Debug.Log(a);
         if (a > sucsess)
         {
-            breakP.gameObject.SetActive(true);
-            if (bangji > 0)
-            {
-                bangji--;
-                Debug.Log($"방지권을 소모해 파괴를 막았다...!!(남은 방지권: {bangji})");
-            }
-            else
-            {
-                BackToTeCho();
-            }
+            breakP.SetActive(true);
+            noticeT.text = $"방지권을 {swordbangji}개 소모해 다시 강화를 이어갈 수 있습니다";
+            plusT.text = $"현재 단계: +{plus}강";
         }
         else
         {
@@ -82,95 +85,143 @@ public class GameManager : MonoBehaviour
     {
         if(plus == 0)
         {
-            firstP.gameObject.SetActive(true);
+            firstP.SetActive(true);
 
-            SwordData(100, "평범검", 0, 300);
+            SwordData(100, "평범검", 0, 300, 1);
         }
         else if(plus == 1)
         {
-            firstP.gameObject.SetActive(false);
-            secondP.gameObject.SetActive(true);
+            firstP.SetActive(false);
+            secondP.SetActive(true);
 
-            SwordData(99, "강화된 평범검", 150, 300);
+            SwordData(99, "강화된 평범검", 400, 300, 1);
         }
         else if (plus == 2)
         {
-            SwordData(98, "묶인 평범검", 400, 500);
+            SwordData(95, "묶인 평범검", 500, 500, 1);
         }
         else if (plus == 3)
         {
-            SwordData(95, "양날검", 500, 600);
+            SwordData(90, "양날검", 800, 600, 1);
         }
         else if (plus == 4)
         {
-            SwordData(90, "신의 은검", 700, 1200);
+            SwordData(85, "앱솔칼리버", 1000, 1200, 1);
         }
         else if (plus == 5)
         {
-            SwordData(85, "본질", 1000, 1700);
+            SwordData(80, "특검", 2500, 1700, 1);
         }
         else if (plus == 6)
         {
-            SwordData(80, "아머소드", 1300, 2000);
+            SwordData(80, "마왕이 10년 쓰다 버린 검", 5500, 2000, 1);
         }
         else if (plus == 7)
         {
-            SwordData(80, "재본질", 1600, 2500);
+            SwordData(75, "마체테?", 6700, 2300, 2);
         }
         else if (plus == 8)
         {
-            SwordData(75, "곡곡곡도", 1900, 3100);
+            SwordData(70, "곡곡곡도", 8400, 2800, 2);
         }
         else if (plus == 9)
         {
-            SwordData(70, "시퍼런", 2200, 3500);
+            SwordData(70, "마왕의 새 검", 10000, 3200, 2);
         }
         else if (plus == 10)
         {
-            SwordData(70, "이차원의 검", 2600, 4000);
+            SwordData(65, "MZ세대 마왕의 검", 26000, 3600, 3);
         }
         else if (plus == 11)
         {
-            SwordData(60, "불사조 깃", 3200, 4200);
+            SwordData(50, "주작의 깃", 48000, 4000, 4);
+            button.SetActive(true);
         }
         else if (plus == 12)
         {
-            SwordData(60, "싹트는 것", 4200, 5000);
+            SwordData(40, "뉴비 용사의 검", 70000, 5000, 6);
         }
         else if (plus == 13)
         {
-            SwordData(60, "PEAK", 6000, 7000);
+            SwordData(35, "중수 뉴비 용사의 검", 100000, 7000, 8);
         }
         else if (plus == 14)
         {
-            SwordData(50, "마지막 시련", 10000, 0);
+            SwordData(1, "도금검", 200000, 8000, 10);
+            button.SetActive(true);
         }
     }
 
-     void SwordData(int a, string b, int c, int d)
+     void SwordData(int a, string b, int c, int d, int e)
     {
         sucsess = a;
         swordname.text = $"+{plus} {b}";
         swordmoney = c;
         swordPlusmoney = d;
+        swordbangji = e;
     }
 
     void BackToTeCho()
     {
-        firstP.gameObject.SetActive(false);
-        secondP.gameObject.SetActive(false);
+        firstP.SetActive(false);
+        secondP.SetActive(false);
+        button.SetActive(false);
         plus = 0;
     }
-
     public void Sell()
     {
         money += swordmoney;
         BackToTeCho();
         SetSword();
     }
-
+    public void Break()
+    {
+        BackToTeCho();
+        SetSword();
+    }
     public void Bangji()
     {
-        bangji++;
+        bangji-=swordbangji;
+        breakP.SetActive(false);
+    }
+    public void Buy(int num)
+    {
+        int m = 0;
+
+        if(num == 0)
+        {
+            m = 8000;
+        }
+        else if(num == 1)
+        {
+            m = 12000;
+
+            bangji += 3;
+        }
+        else if(num == 2)
+        {
+            m = 12000;
+        }
+        else if (num == 3)
+        {
+            m = 18000;
+        }
+        else if (num == 4)
+        {
+            m = 26000;
+        }
+
+        if (money >= m)
+        {
+            if(num < 2)
+            {
+                bangji++;
+            }
+            else
+            {
+                warp++;
+            }
+            money -= m;
+        }
     }
 }
