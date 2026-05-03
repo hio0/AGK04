@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEditor.Progress;
@@ -18,6 +20,14 @@ public class GameManager : MonoBehaviour
     public int swordmoney;
     public int swordbangji;
     public GameObject button;
+    public Transform itemIv;
+    public Transform swordIv;
+    public GameObject saveitem;
+    public GameObject savesword;
+    public Dictionary<string, int> ivswords = new Dictionary<string, int>();
+    public Dictionary<string, int> ivitems = new Dictionary<string, int>();
+    public Transform itemP;
+    public int whatLv;
 
     public TMP_Text sucsessT;
     public TMP_Text moneyT;
@@ -38,8 +48,6 @@ public class GameManager : MonoBehaviour
     {
         SetSword();
         money = 10000;
-
-        bangji = 100;
     }
 
     // Update is called once per frame
@@ -83,13 +91,13 @@ public class GameManager : MonoBehaviour
 
     void SetSword()
     {
-        if(plus == 0)
+        if (plus == 0)
         {
             firstP.SetActive(true);
 
             SwordData(100, "Æò¹ü°Ë", 0, 300, 1);
         }
-        else if(plus == 1)
+        else if (plus == 1)
         {
             firstP.SetActive(false);
             secondP.SetActive(true);
@@ -98,35 +106,35 @@ public class GameManager : MonoBehaviour
         }
         else if (plus == 2)
         {
-            SwordData(95, "¹­ÀÎ Æò¹ü°Ë", 500, 500, 1);
+            SwordData(95, "¹­ÀÎ Æò¹ü°Ë", 800, 500, 1);
         }
         else if (plus == 3)
         {
-            SwordData(90, "¾ç³¯°Ë", 800, 600, 1);
+            SwordData(90, "¾ç³¯°Ë", 1000, 600, 1);
         }
         else if (plus == 4)
         {
-            SwordData(85, "¾Û¼ÖÄ®¸®¹ö", 1000, 1200, 1);
+            SwordData(85, "¾Û¼ÖÄ®¸®¹ö", 1400, 1200, 1);
         }
         else if (plus == 5)
         {
-            SwordData(80, "Æ¯°Ë", 2500, 1700, 1);
+            SwordData(80, "Æ¯°Ë", 3200, 1700, 1);
         }
         else if (plus == 6)
         {
-            SwordData(80, "¸¶¿ÕÀÌ 10³â ¾²´Ù ¹ö¸° °Ë", 5500, 2000, 1);
+            SwordData(80, "¸¶¿ÕÀÌ 10³â ¾²´Ù ¹ö¸° °Ë", 6500, 2000, 1);
         }
         else if (plus == 7)
         {
-            SwordData(75, "¸¶Ã¼Å×?", 6700, 2300, 2);
+            SwordData(75, "¸¶Ã¼Å×?", 7800, 2300, 2);
         }
         else if (plus == 8)
         {
-            SwordData(70, "°î°î°îµµ", 8400, 2800, 2);
+            SwordData(70, "°î°î°îµµ", 9000, 2800, 2);
         }
         else if (plus == 9)
         {
-            SwordData(70, "¸¶¿ÕÀÇ »õ °Ë", 10000, 3200, 2);
+            SwordData(70, "¸¶¿ÕÀÇ »õ °Ë", 13000, 3200, 2);
         }
         else if (plus == 10)
         {
@@ -152,7 +160,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-     void SwordData(int a, string b, int c, int d, int e)
+    void SwordData(int a, string b, int c, int d, int e)
     {
         sucsess = a;
         swordname.text = $"+{plus} {b}";
@@ -168,37 +176,104 @@ public class GameManager : MonoBehaviour
         button.SetActive(false);
         plus = 0;
     }
+
     public void Sell()
     {
         money += swordmoney;
         BackToTeCho();
         SetSword();
     }
+
+    public void SaveSword()
+    {
+        bool isit = false;
+
+        GameObject now;
+
+        foreach (KeyValuePair<string, int> sword in ivswords)
+        {
+            if (sword.Key == swordname.text)
+            {
+                isit = true;
+            }
+        }
+
+        if (isit)
+        {
+            ivswords[swordname.text]++;
+        }
+        else
+        {
+            ivswords.Add(swordname.text, 1);
+            Instantiate(savesword, swordIv);
+
+            now = swordIv.GetChild(ivswords.Count - 1).gameObject; // ÇÁ¸®ÆÕÀ» Á÷Á¢ ÅëÁ¦
+            now.transform.Find("name").GetComponentInChildren<TMP_Text>().text = swordname.text;
+        }
+
+        BackToTeCho();
+        SetSword();
+    }
+
+    public void SaveItem(int num)
+    {
+        bool isit = false;
+
+        GameObject now;
+        string a = itemP.GetChild(num).gameObject.transform.Find("Text (TMP)").GetComponentInChildren<TMP_Text>().text;
+
+        foreach (KeyValuePair<string, int> item in ivitems)
+        {
+            if (item.Key == a)
+            {
+                isit = true;
+            }
+        }
+
+        if (isit)
+        {
+            ivitems[a]++;
+        }
+        else
+        {
+            ivitems.Add(a, 1);
+            Instantiate(saveitem, itemIv);
+
+            now = itemIv.GetChild(ivitems.Count - 1).gameObject; // ÇÁ¸®ÆÕÀ» Á÷Á¢ ÅëÁ¦
+            now.transform.Find("name").GetComponentInChildren<TMP_Text>().text = a;
+        }
+    }
+
     public void Break()
     {
         BackToTeCho();
         SetSword();
     }
+
     public void Bangji()
     {
-        bangji-=swordbangji;
-        breakP.SetActive(false);
+        if(bangji > 0)
+        {
+            bangji -= swordbangji;
+            breakP.SetActive(false);
+        }
     }
+
     public void Buy(int num)
     {
         int m = 0;
 
-        if(num == 0)
+        if (num == 0)
         {
             m = 8000;
         }
-        else if(num == 1)
+        else if (num == 1)
         {
             m = 12000;
 
             bangji += 3;
         }
-        else if(num == 2)
+        else if (num == 2)
         {
             m = 12000;
         }
@@ -213,13 +288,13 @@ public class GameManager : MonoBehaviour
 
         if (money >= m)
         {
-            if(num < 2)
+            if (num < 2)
             {
                 bangji++;
             }
             else
             {
-                warp++;
+                SaveItem(num);
             }
             money -= m;
         }
