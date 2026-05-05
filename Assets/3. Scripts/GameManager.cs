@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
 using TMPro;
 using Unity.VisualScripting;
@@ -12,6 +13,7 @@ public class GameManager : MonoBehaviour
     public GameObject firstP;
     public GameObject secondP;
     public GameObject breakP;
+    public GameObject pasanP;
 
     public Sprite[] swords = new Sprite[15];
     public Image sword;
@@ -27,7 +29,11 @@ public class GameManager : MonoBehaviour
     public Dictionary<string, int> ivswords = new Dictionary<string, int>();
     public Dictionary<string, int> ivitems = new Dictionary<string, int>();
     public Transform itemP;
-    public int whatLv;
+    public Transform dogamP;
+    public GameObject dogamsword;
+    public GameObject newsword;
+    public List<string> dogamlist = new List<string>();
+    public GameObject gujiT;
 
     public TMP_Text sucsessT;
     public TMP_Text moneyT;
@@ -36,18 +42,32 @@ public class GameManager : MonoBehaviour
     public TMP_Text bangjiT;
     public TMP_Text plusT;
     public TMP_Text noticeT;
+    public TMP_Text pasanT;
+    public TMP_Text onoffT;
 
     public int plus = 0;
     public int sucsess;
     public int money;
     public int bangji;
     public int warp;
+    bool isOn = false;
+    bool isIt;
+
+    public new AudioSource audio;
+    public AudioSource effectS;
+    public AudioClip mainost;
+    public AudioClip moneyS;
+    public AudioClip upgradeS;
+    public AudioClip breackS;
 
     // Start is called before the first frame update
     void Start()
     {
         SetSword();
         money = 10000;
+        bangji += 100;
+
+        Sound(true, mainost);
     }
 
     // Update is called once per frame
@@ -60,36 +80,63 @@ public class GameManager : MonoBehaviour
         sucsessT.text = $"성공확률: {sucsess.ToString()}%";
         moneyT.text = "돈: " + money + "원";
         bangjiT.text = "방지권: " + bangji + "개";
+
+        if (money <= 300)
+        {
+            pasanP.SetActive(true);
+        }
+        if (pasanP.activeSelf == true)
+        {
+            pasanT.text = $"앞으로 {10000 - money}원";
+
+            if (money >= 10000)
+            {
+                pasanP.SetActive(false);
+            }
+        }
+
+        if (money >= swordPlusmoney)
+        {
+            gujiT.SetActive(false);
+        }
+        else
+        {
+            gujiT.SetActive(true);
+        }
     }
 
     public void GetMouseBD()
     {
-        int a = 0;
-        if (plus > 0)
+        if(money >= swordPlusmoney)
         {
-            a = Random.Range(1, 101);
-        }
-        else
-        {
-            a = 1;
-        }
-        Debug.Log(a);
-        if (a > sucsess)
-        {
-            breakP.SetActive(true);
-            noticeT.text = $"방지권을 {swordbangji}개 소모해 다시 강화를 이어갈 수 있습니다";
-            plusT.text = $"현재 단계: +{plus}강";
-        }
-        else
-        {
-            money -= swordPlusmoney;
-            plus++;
-        }
+            int a = 0;
+            if (plus > 0)
+            {
+                a = Random.Range(1, 101);
+            }
+            else
+            {
+                a = 1;
+            }
+            Debug.Log(a);
+            if (a > sucsess)
+            {
+                breakP.SetActive(true);
+                EffectSound(breackS);
+                noticeT.text = $"방지권을 {swordbangji}개 소모해 다시 강화를 이어갈 수 있습니다";
+                plusT.text = $"현재 단계: +{plus}강";
+            }
+            else
+            {
+                money -= swordPlusmoney;
+                plus++;
 
-        SetSword();
+                SetSword();
+            }
+        }
     }
 
-    void SetSword()
+    public void SetSword()
     {
         if (plus == 0)
         {
@@ -99,42 +146,39 @@ public class GameManager : MonoBehaviour
         }
         else if (plus == 1)
         {
-            firstP.SetActive(false);
-            secondP.SetActive(true);
-
             SwordData(99, "강화된 평범검", 400, 300, 1);
         }
         else if (plus == 2)
         {
-            SwordData(95, "묶인 평범검", 800, 500, 1);
+            SwordData(95, "묶인 평범검", 1000, 500, 1);
         }
         else if (plus == 3)
         {
-            SwordData(90, "양날검", 1000, 600, 1);
+            SwordData(90, "양날검", 1500, 600, 1);
         }
         else if (plus == 4)
         {
-            SwordData(85, "앱솔칼리버", 1400, 1200, 1);
+            SwordData(85, "앱솔칼리버", 2800, 1200, 1);
         }
         else if (plus == 5)
         {
-            SwordData(80, "특검", 3200, 1700, 1);
+            SwordData(80, "특검", 5000, 1700, 1);
         }
         else if (plus == 6)
         {
-            SwordData(80, "마왕이 10년 쓰다 버린 검", 6500, 2000, 1);
+            SwordData(80, "마왕이 10년 쓰다 버린 검", 8300, 2000, 1);
         }
         else if (plus == 7)
         {
-            SwordData(75, "마체테?", 7800, 2300, 2);
+            SwordData(75, "마체테?", 10000, 2300, 2);
         }
         else if (plus == 8)
         {
-            SwordData(70, "곡곡곡도", 9000, 2800, 2);
+            SwordData(70, "곡곡곡도", 14000, 2600, 2);
         }
         else if (plus == 9)
         {
-            SwordData(70, "마왕의 새 검", 13000, 3200, 2);
+            SwordData(70, "마왕의 새 검", 17000, 3000, 2);
         }
         else if (plus == 10)
         {
@@ -158,6 +202,20 @@ public class GameManager : MonoBehaviour
             SwordData(1, "도금검", 200000, 8000, 10);
             button.SetActive(true);
         }
+        else if(plus > 14)
+        {
+            Debug.Log("와1 엔딩!!");
+            BackToTeCho();
+            SetSword();
+        }
+
+        if (plus > 0)
+        {
+            firstP.SetActive(false);
+            secondP.SetActive(true);
+
+            EffectSound(upgradeS);
+        }
     }
 
     void SwordData(int a, string b, int c, int d, int e)
@@ -167,9 +225,38 @@ public class GameManager : MonoBehaviour
         swordmoney = c;
         swordPlusmoney = d;
         swordbangji = e;
+
+        isIt = false;
+        foreach (string sword in dogamlist)
+        {
+            if (sword == swordname.text)
+            {
+                isIt = true;
+                break;
+            }
+        }
+
+        if (!isIt)
+        {
+            GameObject now;
+            newsword.SetActive(true);
+
+            dogamlist.Add(swordname.text);
+            Instantiate(dogamsword, dogamP);
+            now = dogamP.GetChild(dogamP.childCount - 1).gameObject;
+            now.transform.Find("sword").GetComponentInChildren<Image>().sprite = swords[plus];
+            now.transform.Find("name").GetComponentInChildren<TMP_Text>().text = b;
+            now.transform.Find("sta").GetComponentInChildren<TMP_Text>().text = $"{a}% / 방지권 {e}개 필요\r\n강화 {d}원 / 판매 {c}원";
+        }
+        else
+        {
+            newsword.SetActive(false);
+        }
+
+        button.SetActive(false);
     }
 
-    void BackToTeCho()
+    public void BackToTeCho()
     {
         firstP.SetActive(false);
         secondP.SetActive(false);
@@ -180,25 +267,16 @@ public class GameManager : MonoBehaviour
     public void Sell()
     {
         money += swordmoney;
+        EffectSound(moneyS);
         BackToTeCho();
         SetSword();
     }
 
     public void SaveSword()
     {
-        bool isit = false;
-
         GameObject now;
 
-        foreach (KeyValuePair<string, int> sword in ivswords)
-        {
-            if (sword.Key == swordname.text)
-            {
-                isit = true;
-            }
-        }
-
-        if (isit)
+        if (isIt)
         {
             ivswords[swordname.text]++;
         }
@@ -209,18 +287,19 @@ public class GameManager : MonoBehaviour
 
             now = swordIv.GetChild(ivswords.Count - 1).gameObject; // 프리팹을 직접 통제
             now.transform.Find("name").GetComponentInChildren<TMP_Text>().text = swordname.text;
+            now.GetComponent<Item>().whatLv = plus;
         }
 
         BackToTeCho();
         SetSword();
     }
 
-    public void SaveItem(int num)
+    public void SaveItem(int num, int warp)
     {
         bool isit = false;
 
         GameObject now;
-        string a = itemP.GetChild(num).gameObject.transform.Find("Text (TMP)").GetComponentInChildren<TMP_Text>().text;
+        string a = itemP.GetChild(num).gameObject.transform.Find("Text (TMP)").GetComponentInChildren<TMP_Text>().text.Replace("\n", " ");
 
         foreach (KeyValuePair<string, int> item in ivitems)
         {
@@ -241,6 +320,7 @@ public class GameManager : MonoBehaviour
 
             now = itemIv.GetChild(ivitems.Count - 1).gameObject; // 프리팹을 직접 통제
             now.transform.Find("name").GetComponentInChildren<TMP_Text>().text = a;
+            now.GetComponent<Item>().whatLv = warp;
         }
     }
 
@@ -252,7 +332,7 @@ public class GameManager : MonoBehaviour
 
     public void Bangji()
     {
-        if(bangji > 0)
+        if (bangji >= swordbangji)
         {
             bangji -= swordbangji;
             breakP.SetActive(false);
@@ -262,6 +342,7 @@ public class GameManager : MonoBehaviour
     public void Buy(int num)
     {
         int m = 0;
+        int w = 0;
 
         if (num == 0)
         {
@@ -269,34 +350,78 @@ public class GameManager : MonoBehaviour
         }
         else if (num == 1)
         {
-            m = 12000;
-
-            bangji += 3;
+            m = 20000;
+            
+            if (money >= m)
+            {
+                bangji += 3;
+                money -= m;
+            }
         }
         else if (num == 2)
         {
             m = 12000;
+            w = 6;
         }
         else if (num == 3)
         {
             m = 18000;
+            w = 8;
         }
         else if (num == 4)
         {
             m = 26000;
+            w = 11;
         }
 
         if (money >= m)
         {
-            if (num < 2)
+            if (num == 0)
             {
                 bangji++;
             }
             else
             {
-                SaveItem(num);
+                SaveItem(num, w);
             }
             money -= m;
+        }
+    }
+
+    public void Hujup()
+    {
+        money += 200;
+        EffectSound(moneyS);
+    }
+
+    void Sound(bool isloop, AudioClip clip)
+    {
+        audio.loop = isloop;
+        audio.clip = clip;
+        audio.Play();
+    }
+
+    void EffectSound(AudioClip clip)
+    {
+        effectS.clip = clip;
+        effectS.Play();
+    }
+
+    public void SoundOnOff()
+    {
+        if(isOn)
+        {
+            onoffT.text = "배경음악 끄기";
+            audio.volume = 0.7f;
+
+            isOn = false;
+        }
+        else
+        {
+            onoffT.text = "배경음악 켜기";
+            audio.volume = 0;
+
+            isOn = true;
         }
     }
 }
