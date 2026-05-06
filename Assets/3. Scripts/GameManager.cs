@@ -51,7 +51,7 @@ public class GameManager : MonoBehaviour
     public int bangji;
     public int warp;
     bool isOn = false;
-    bool isIt;
+    bool isItDogam;
 
     public new AudioSource audio;
     public AudioSource effectS;
@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         SetSword();
-        money = 10000;
+        money = 100000;
         bangji += 100;
 
         Sound(true, mainost);
@@ -73,9 +73,16 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        sword.sprite = swords[plus];
+        if(plus < swords.Length)
+        {
+            sword.sprite = swords[plus];
+        }
+        else
+        {
+            sword.sprite = null;
+        }
 
-        swordMT.text = $"판매비용: {swordmoney.ToString()}원";
+            swordMT.text = $"판매비용: {swordmoney.ToString()}원";
         swordPMT.text = $"강화비용: {swordPlusmoney.ToString()}원";
         sucsessT.text = $"성공확률: {sucsess.ToString()}%";
         moneyT.text = "돈: " + money + "원";
@@ -150,56 +157,56 @@ public class GameManager : MonoBehaviour
         }
         else if (plus == 2)
         {
-            SwordData(95, "묶인 평범검", 1000, 500, 1);
+            SwordData(95, "묶인 평범검", 1500, 500, 1);
         }
         else if (plus == 3)
         {
-            SwordData(90, "양날검", 1500, 600, 1);
+            SwordData(90, "양날검", 3500, 600, 1);
         }
         else if (plus == 4)
         {
-            SwordData(85, "앱솔칼리버", 2800, 1200, 1);
+            SwordData(85, "앱솔칼리버", 5900, 1200, 1);
         }
         else if (plus == 5)
         {
-            SwordData(80, "특검", 5000, 1700, 1);
+            SwordData(80, "특검", 8400, 1700, 1);
         }
         else if (plus == 6)
         {
-            SwordData(80, "마왕이 10년 쓰다 버린 검", 8300, 2000, 1);
+            SwordData(80, "마왕이 10년 쓰다 버린 검", 12000, 2000, 1);
         }
         else if (plus == 7)
         {
-            SwordData(75, "마체테?", 10000, 2300, 2);
+            SwordData(75, "마체테?", 17000, 2300, 2);
         }
         else if (plus == 8)
         {
-            SwordData(70, "곡곡곡도", 14000, 2600, 2);
+            SwordData(70, "곡곡곡도", 28000, 2600, 2);
         }
         else if (plus == 9)
         {
-            SwordData(70, "마왕의 새 검", 17000, 3000, 2);
+            SwordData(70, "마왕의 새 검", 48000, 3000, 2);
         }
         else if (plus == 10)
         {
-            SwordData(65, "MZ세대 마왕의 검", 26000, 3600, 3);
+            SwordData(65, "MZ세대 마왕의 검", 62000, 3600, 3);
         }
         else if (plus == 11)
         {
-            SwordData(50, "주작의 깃", 48000, 4000, 4);
+            SwordData(50, "주작의 깃",87000, 4000, 4);
             button.SetActive(true);
         }
         else if (plus == 12)
         {
-            SwordData(40, "뉴비 용사의 검", 70000, 5000, 6);
+            SwordData(40, "뉴비 용사의 검", 100000, 5000, 6);
         }
         else if (plus == 13)
         {
-            SwordData(35, "중수 뉴비 용사의 검", 100000, 7000, 8);
+            SwordData(35, "중수 뉴비 용사의 검", 150000, 7000, 8);
         }
         else if (plus == 14)
         {
-            SwordData(1, "도금검", 200000, 8000, 10);
+            SwordData(1, "도금검", 500000, 8000, 10);
             button.SetActive(true);
         }
         else if(plus > 14)
@@ -226,17 +233,17 @@ public class GameManager : MonoBehaviour
         swordPlusmoney = d;
         swordbangji = e;
 
-        isIt = false;
+        isItDogam = false;
         foreach (string sword in dogamlist)
         {
             if (sword == swordname.text)
             {
-                isIt = true;
+                isItDogam = true;
                 break;
             }
         }
 
-        if (!isIt)
+        if (!isItDogam)
         {
             GameObject now;
             newsword.SetActive(true);
@@ -275,6 +282,15 @@ public class GameManager : MonoBehaviour
     public void SaveSword()
     {
         GameObject now;
+
+        bool isIt = false;
+        foreach (KeyValuePair<string, int> sword in ivswords)
+        {
+            if (sword.Key == swordname.text)
+            {
+                isIt = true;
+            }
+        }
 
         if (isIt)
         {
