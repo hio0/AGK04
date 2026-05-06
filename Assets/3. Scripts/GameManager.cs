@@ -367,12 +367,6 @@ public class GameManager : MonoBehaviour
         else if (num == 1)
         {
             m = 20000;
-            
-            if (money >= m)
-            {
-                bangji += 3;
-                money -= m;
-            }
         }
         else if (num == 2)
         {
@@ -395,6 +389,10 @@ public class GameManager : MonoBehaviour
             if (num == 0)
             {
                 bangji++;
+            }
+            else if(num == 1)
+            {
+                bangji += 3;
             }
             else
             {
